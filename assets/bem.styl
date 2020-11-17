@@ -1,0 +1,33 @@
+block($name) {
+  / .{$name} {
+    {block}
+  }
+}
+
+element($name) {
+  $continue = true
+  $name = '__' + $name
+
+  for $caller in called-from {
+    if $continue && ($caller in ('element' 'modifier')) {
+      $continue = false
+      // Use the latest caller as prefix
+      & ^[0]{$name} {
+        {block}
+      }
+    } else {
+      &{$name} {
+        {block}
+      }
+    }
+  }
+}
+
+modifier($name, $val = null) {
+  $val = $val && '-' + $val
+  $name = '_' + $name
+  $name = $val ? $name + $val:$name
+  &{$name} {
+    {block}
+  }
+}
